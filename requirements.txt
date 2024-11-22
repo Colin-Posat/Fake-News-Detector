@@ -1,5 +1,7 @@
+Flask
 joblib
 python-dotenv
 openai
-modal-client
 gunicorn
+pandas
+numpy
