@@ -41,7 +41,7 @@ def summarize_article(news):
     openai.api_key = os.getenv("API_KEY")
 
     # Define a prompt for summarization
-    prompt = "Please list the key points of this article very consicesly with only a few key points using - to mark the beginning of each and say nothing else"
+    prompt = "Please list the key points of this article very consicesly with only a few key points using - to mark the beginning of each and say nothing else. if article is short than 10 words just say \"Please enter an article and try again\""
 
     # Use the new API method
     response = openai.ChatCompletion.create(
@@ -72,16 +72,17 @@ def testing_validity(news):
     if RF.predict(new_xv_test) == 1 and LR_confidence > 90:
         return "This is definitely not fake news and we are " + str(round(LR_confidence, 2)) + "% sure."
     elif RF.predict(new_xv_test) == 1 and LR_confidence > 65:
-        return "This is probably not fake news and we are " + str(round(LR_confidence, 2)) + "% sure."
+        return "This is most likely not fake news and we are " + str(round(LR_confidence, 2)) + "% sure."
     elif RF.predict(new_xv_test) == 1 and LR_confidence <= 65:
-        return "This may be fake news and we are " + str(round(LR_confidence, 2)) + "% sure."
+        return "This is probably not fake news but we are only " + str(round(LR_confidence, 2)) + "% sure."
     if RF.predict(new_xv_test) == 0 and LR_confidence > 90:
         return "This is definitely fake news and we are " + str(round(LR_confidence, 2)) + "% sure."
     elif(RF.predict(new_xv_test) == 0) and LR_confidence > 65:
         return "This is probably fake news and we are " + str(round(LR_confidence, 2)) + "% sure."
-    elif(RF.predict(new_xv_test) == 0) and LR_confidence <= 65:
-        return "This is may be fake news and we are " + str(round(LR_confidence, 2)) + "% sure."
-    
+    elif(RF.predict(new_xv_test) == 0) and LR_confidence > 55:
+        return "This is may be fake news but we are only " + str(round(LR_confidence, 2)) + "% sure."
+    else:
+        return "This is probably not fake news but we are only " + str(round(LR_confidence, 2)) + "% sure."
 
 
 app = Flask(__name__)
@@ -105,7 +106,7 @@ def run_script():
         return render_template("index.html", result="No news provided", summary="")
     result = testing_validity(news)
     summary = summarize_article(news)
-    summary = summary.replace("- ", "<br>-")
+    summary = summary.replace("- ", "<br><br>-")
     return render_template("index.html", result=result, summary=summary, news=news)
 
 if __name__ == "__main__":
