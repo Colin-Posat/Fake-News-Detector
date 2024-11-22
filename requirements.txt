@@ -2,3 +2,4 @@ joblib
 python-dotenv
 openai
 modal-client
+gunicorn
