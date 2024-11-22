@@ -10,31 +10,31 @@
     <h1>Fake News Detector</h1>
     <form action="/run-script" method="post">
       <textarea
-        class="center"
         placeholder="Enter your news article here..."
         id="news"
         name="news"
         rows="15"
-        cols="100"
       >
 {{ news }}</textarea
-      ><br /><br />
-      <button class="center" type="submit">Detect Fake News</button>
+      >
+      <div class="centered-button">
+        <button type="submit">Detect Fake News</button>
+      </div>
     </form>
-    <div>
+
+    <!-- Result Section -->
+    <div class="result-box">
       <h2>Result:</h2>
       <p>{{ result }}</p>
     </div>
 
-    <div>
+    <!-- Key Points Section -->
+    <div class="key-points-box">
       <h2 class="key-points-heading">Key Points of Article:</h2>
       <p>{{ summary|safe }}</p>
     </div>
 
-    <button
-      onclick="location.href='/about'"
-      style="position: absolute; top: 10px; right: 10px"
-    >
+    <button class="about-button" onclick="location.href='/about'">
       How This Works?
     </button>
   </body>
