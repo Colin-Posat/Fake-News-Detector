@@ -8,4 +8,4 @@ numpy
 seaborn
 matplotlib
 scikit-learn
-modal-client
+modal
