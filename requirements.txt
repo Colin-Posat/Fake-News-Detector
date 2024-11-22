@@ -5,3 +5,7 @@ openai
 gunicorn
 pandas
 numpy
+seaborn
+matplotlib
+scikit-learn
+modal-client
