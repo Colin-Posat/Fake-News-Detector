@@ -1,7 +1,7 @@
 Flask
 joblib
 python-dotenv
-openai
+openai==0.28
 gunicorn
 pandas
 numpy
