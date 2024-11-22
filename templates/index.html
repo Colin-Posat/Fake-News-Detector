@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <title>Fake News Detector</title>
+  </head>
+  <body>
+    <h1>Fake News Detector</h1>
+    <form action="/run-script" method="post">
+      <textarea
+        class="center"
+        placeholder="Enter your news article here..."
+        id="news"
+        name="news"
+        rows="15"
+        cols="100"
+      >
+{{ news }}</textarea
+      ><br /><br />
+      <button class="center" type="submit">Detect Fake News</button>
+    </form>
+    <div>
+      <h2>Result:</h2>
+      <p>{{ result }}</p>
+    </div>
+
+    <div>
+      <h2 class="key-points-heading">Key Points of Article:</h2>
+      <p>{{ summary|safe }}</p>
+    </div>
+
+    <button onclick="location.href='/about'" style="margin-top: 20px">
+      How This Works?
+    </button>
+  </body>
+</html>
