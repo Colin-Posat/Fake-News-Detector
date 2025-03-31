@@ -1,81 +1,190 @@
-/* General Styles */
+:root {
+  --primary: #3a86ff;
+  --secondary: #8338ec;
+  --dark: #2b2d42;
+  --light: #f8f9fa;
+  --success: #38b000;
+  --warning: #ff5400;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    margin: 20px;
-    padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--light);
+  color: var(--dark);
+  line-height: 1.6;
+  padding: 0;
+  margin: 0;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+header {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 30px 0;
+  text-align: center;
+  margin-bottom: 40px;
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.card, .result-box, .key-points-box {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 30px;
+  margin-bottom: 30px;
+  transition: var(--transition);
+}
+
+.card:hover, .result-box:hover, .key-points-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.card h2, .result-box h2, .key-points-box h2 {
+  color: var(--primary);
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card h2::before, .result-box h2::before, .key-points-box h2::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 24px;
+  background: linear-gradient(to bottom, var(--primary), var(--secondary));
+  border-radius: 3px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  transition: var(--transition);
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
+}
+
+button {
+  background: linear-gradient(to right, var(--primary), var(--secondary));
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 10px rgba(58, 134, 255, 0.2);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(58, 134, 255, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.about-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  color: var(--primary);
+  border: 1px solid rgba(58, 134, 255, 0.2);
+  padding: 10px 20px;
+  box-shadow: var(--box-shadow);
+}
+
+.about-button:hover {
+  background: rgba(58, 134, 255, 0.05);
+}
+
+.result-box .status {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.key-points-heading {
+  margin-bottom: 15px;
+}
+
+.key-points {
+  padding-left: 20px;
+}
+
+.key-points li {
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.key-points li::before {
+  content: '•';
+  color: var(--primary);
+  font-weight: bold;
+  position: absolute;
+  left: -20px;
+}
+
+.centered-button {
+  text-align: center;
+  margin: 30px 0;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 15px;
+  }
+  
+  header {
+    padding: 20px 0;
+    margin-bottom: 30px;
   }
   
   h1 {
-    color: #333;
-    display: flex;
-    justify-content: center;
-    font-size: 50px;
-    margin: 0 0 20px;
+    font-size: 2rem;
   }
   
-  .center {
-    display: block;
-    margin: 0 auto;
-  }
-  
-  /* Button Styling */
-  button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 6px;
-    font-size: 16px;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  .about-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-  }
-  
-  /* Boxes */
-  .result-box,
-  .key-points-box {
-    border: 2px solid #007bff;
+  .card, .result-box, .key-points-box {
     padding: 20px;
-    margin: 20px 0;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    width: 80%; /* Adjusts the width of the boxes */
-    margin-left: auto; /* Center the box horizontally */
-    margin-right: auto; /* Center the box horizontally */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
   }
-  
-  /* Key Points Heading */
-  .key-points-heading {
-    margin-bottom: 15px;
-    text-align: center;
-    font-size: 24px;
-  }
-  
-  /* Text Area */
-  textarea {
-    display: block;
-    margin: 20px auto;
-    width: 80%; /* Align with box width */
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    font-size: 16px;
-  }
-  
-  /* Centered Button */
-  .centered-button {
-    text-align: center;
-    margin-top: 20px;
-    padding-bottom: 55px;
-  }
-  
+}

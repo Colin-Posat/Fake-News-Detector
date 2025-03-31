@@ -3,35 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="stylesheet" href="../static/styles.css" />
     <title>Fake News Detector</title>
   </head>
   <body>
-    <h1>Fake News Detector</h1>
-    <form action="/run-script" method="post">
-      <textarea
-        placeholder="Enter your news article here..."
-        id="news"
-        name="news"
-        rows="15"
-      >
+    <header>
+      <h1>Fake News Detector</h1>
+    </header>
+
+    <div class="container">
+      <form action="/run-script" method="post">
+        <div class="card">
+          <h2>News Article</h2>
+          <textarea
+            placeholder="Enter your news article here..."
+            id="news"
+            name="news"
+            rows="10"
+          >
 {{ news }}</textarea
-      >
-      <div class="centered-button">
-        <button type="submit">Detect Fake News</button>
+          >
+        </div>
+
+        <div class="centered-button">
+          <button type="submit">Detect Fake News</button>
+        </div>
+      </form>
+
+      <div class="card result-box">
+        <h2>Analysis Result</h2>
+        <div class="status">{{ result }}</div>
       </div>
-    </form>
 
-    <!-- Result Section -->
-    <div class="result-box">
-      <h2>Result:</h2>
-      <p>{{ result }}</p>
-    </div>
-
-    <!-- Key Points Section -->
-    <div class="key-points-box">
-      <h2 class="key-points-heading">Key Points of Article:</h2>
-      <p>{{ summary|safe }}</p>
+      <div class="card key-points-box">
+        <h2 class="key-points-heading">Key Points of Article:</h2>
+        <div>{{ summary|safe }}</div>
+      </div>
     </div>
 
     <button class="about-button" onclick="location.href='/about'">

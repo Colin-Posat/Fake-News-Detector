@@ -38,7 +38,7 @@ RF = joblib.load('trained_models/random_forest_model.pkl')
 
 def summarize_article(news):
     # Set up the OpenAI API key
-    openai.api_key = os.getenv("API_KEY")
+    openai.api_key = os.getenv("OPENAI_API_KEY")
     
     # Define a prompt for summarization
     prompt = "Please list the key points of this article very consicesly with only a few key points using - to mark the beginning of each and say nothing else."
