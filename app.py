@@ -51,7 +51,7 @@ def wordopt(text):
 
 def summarize_article(news):
     try:
-        # Set up the OpenAI API key
+        # Set up the OpenAI API keyy
         openai.api_key = os.getenv("API_KEY")
         
         if not openai.api_key:
