@@ -24,17 +24,49 @@ RF = None
 def load_models():
     global vectorization, LR, DT, GB, RF
     
-    if vectorization is None:
-        try:
-            vectorization = joblib.load("trained_models/vectorizer.pkl")
-            LR = joblib.load('trained_models/logistic_regression_model.pkl')
-            DT = joblib.load('trained_models/decision_tree_model.pkl')
-            GB = joblib.load('trained_models/gradient_boosting_model.pkl')
-            RF = joblib.load('trained_models/random_forest_model.pkl')
-            return True
-        except Exception as e:
-            print(f"Error loading models: {e}")
-            return False
+    # Only load models if they haven't been loaded yet
+    if vectorization is not None:
+        return True
+    
+    try:
+        print("Current working directory:", os.getcwd())
+        print("Files in directory:", os.listdir())
+        if os.path.exists("trained_models"):
+            print("Files in trained_models:", os.listdir("trained_models"))
+        else:
+            print("trained_models directory not found")
+            
+        print("Attempting to load vectorizer...")
+        vectorization = joblib.load("trained_models/vectorizer.pkl")
+        print("Vectorizer loaded successfully")
+        
+        print("Attempting to load LR model...")
+        LR = joblib.load('trained_models/logistic_regression_model.pkl')
+        print("LR model loaded successfully")
+        
+        print("Attempting to load DT model...")
+        DT = joblib.load('trained_models/decision_tree_model.pkl')
+        print("DT model loaded successfully")
+        
+        print("Attempting to load GB model...")
+        GB = joblib.load('trained_models/gradient_boosting_model.pkl')
+        print("GB model loaded successfully")
+        
+        print("Attempting to load RF model...")
+        RF = joblib.load('trained_models/random_forest_model.pkl')
+        print("RF model loaded successfully")
+        
+        return True
+    except Exception as e:
+        print(f"Detailed error loading models: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+# Load models when application starts
+@app.before_first_request
+def initialize():
+    load_models()
 
 def wordopt(text):
     text = text.lower()
@@ -72,8 +104,8 @@ def summarize_article(news):
         return "Error generating summary. Please try again."
 
 def testing_validity(news):
-    # Load models if not already loaded
-    if not load_models():
+    # Check if models are loaded
+    if vectorization is None and not load_models():
         return "Error: Could not load models"
     
     try:
@@ -133,5 +165,8 @@ def run_script():
         return render_template("index.html", result="An error occurred. Please try again.", summary="", news=news if 'news' in locals() else "")
 
 if __name__ == "__main__":
+    # Load models at startup
+    load_models()
+    
     port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port, debug=False)  # Set debug=False in production
