@@ -26,16 +26,14 @@ def load_models():
     
     if vectorization is None:
         try:
-            print("Loading models...")
             vectorization = joblib.load("trained_models/vectorizer.pkl")
             LR = joblib.load('trained_models/logistic_regression_model.pkl')
             DT = joblib.load('trained_models/decision_tree_model.pkl')
             GB = joblib.load('trained_models/gradient_boosting_model.pkl')
             RF = joblib.load('trained_models/random_forest_model.pkl')
-            print("All models loaded successfully!")
             return True
         except Exception as e:
-            print(f"Error loading models: {str(e)}")
+            print(f"Error loading models: {e}")
             return False
 
 def wordopt(text):
@@ -51,12 +49,8 @@ def wordopt(text):
 
 def summarize_article(news):
     try:
-        # Set up the OpenAI API keyy
+        # Set up the OpenAI API key
         openai.api_key = os.getenv("API_KEY")
-        
-        if not openai.api_key:
-            print("WARNING: OpenAI API key not found in environment variables")
-            return "Error: API key not configured. Please contact the administrator."
         
         # Define a prompt for summarization
         prompt = "Please list the key points of this article very concisely with only a few key points using - to mark the beginning of each and say nothing else."
@@ -80,7 +74,7 @@ def summarize_article(news):
 def testing_validity(news):
     # Load models if not already loaded
     if not load_models():
-        return "Error: Could not load prediction models. Please try again later."
+        return "Error: Could not load models"
     
     try:
         testing_news = {"text": [news]}
@@ -101,7 +95,7 @@ def testing_validity(news):
             return "This is most likely not fake news and we are " + str(round(LR_confidence, 2)) + "% sure."
         elif RF_pred == 1 and LR_confidence <= 65:
             return "This is probably not fake news but we are only " + str(round(LR_confidence, 2)) + "% sure."
-        elif RF_pred == 0 and LR_confidence > 90:
+        if RF_pred == 0 and LR_confidence > 90:
             return "This is definitely fake news and we are " + str(round(LR_confidence, 2)) + "% sure."
         elif RF_pred == 0 and LR_confidence > 65:
             return "This is probably fake news and we are " + str(round(LR_confidence, 2)) + "% sure."
@@ -111,7 +105,7 @@ def testing_validity(news):
             return "This is probably not fake news but we are only " + str(round(LR_confidence, 2)) + "% sure."
     except Exception as e:
         print(f"Error in testing_validity: {str(e)}")
-        return "Error analyzing the news article. Please try again."
+        return "Error analyzing the news. Please try again."
 
 @app.route("/")
 def home():
@@ -128,27 +122,16 @@ def run_script():
         
         if not news:
             return render_template("index.html", result="No news provided", summary="")
-        
-        # Get result from model
+            
         result = testing_validity(news)
-        
-        # Only attempt summary if we have a valid article
-        if "Error" not in result:
-            summary = summarize_article(news)
-            summary = summary.replace("- ", "<br><br>-")
-        else:
-            summary = ""
+        summary = summarize_article(news)
+        summary = summary.replace("- ", "<br><br>-")
         
         return render_template("index.html", result=result, summary=summary, news=news)
     except Exception as e:
         print(f"Error in run_script: {str(e)}")
-        return render_template("index.html", 
-                              result="An error occurred processing your request. Please try again.", 
-                              summary="", 
-                              news=news if 'news' in locals() else "")
+        return render_template("index.html", result="An error occurred. Please try again.", summary="", news=news if 'news' in locals() else "")
 
-# For Render deployment
 if __name__ == "__main__":
-    # Render will set PORT environment variable
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
