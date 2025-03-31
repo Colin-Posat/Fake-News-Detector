@@ -24,17 +24,33 @@ RF = None
 def load_models():
     global vectorization, LR, DT, GB, RF
     
-    if vectorization is None:
-        try:
+    try:
+        if vectorization is None:
+            print("Loading models for the first time...")
             vectorization = joblib.load("trained_models/vectorizer.pkl")
+            print("Loaded vectorizer")
+            
             LR = joblib.load('trained_models/logistic_regression_model.pkl')
+            print("Loaded logistic regression model")
+            
             DT = joblib.load('trained_models/decision_tree_model.pkl')
+            print("Loaded decision tree model")
+            
             GB = joblib.load('trained_models/gradient_boosting_model.pkl')
+            print("Loaded gradient boosting model")
+            
             RF = joblib.load('trained_models/random_forest_model.pkl')
-            return True
-        except Exception as e:
-            print(f"Error loading models: {e}")
+            print("Loaded random forest model")
+        
+        # Check if all models are loaded properly
+        if vectorization is None or LR is None or DT is None or GB is None or RF is None:
+            print("Some models failed to load")
             return False
+            
+        return True
+    except Exception as e:
+        print(f"Error loading models: {str(e)}")
+        return False
 
 def wordopt(text):
     text = text.lower()
@@ -50,7 +66,12 @@ def wordopt(text):
 def summarize_article(news):
     try:
         # Set up the OpenAI API key
-        openai.api_key = os.getenv("API_KEY")
+        api_key = os.getenv("API_KEY")
+        if not api_key:
+            print("API_KEY not found in environment variables")
+            return "Error: Missing API key for summary generation."
+            
+        openai.api_key = api_key
         
         # Define a prompt for summarization
         prompt = "Please list the key points of this article very concisely with only a few key points using - to mark the beginning of each and say nothing else."
@@ -72,8 +93,10 @@ def summarize_article(news):
         return "Error generating summary. Please try again."
 
 def testing_validity(news):
+    # Load models if not already loaded
     if not load_models():
-        return "Error: Could not load models"
+        print("Failed to load models")
+        return "Error: Could not load prediction models. Please try again later."
     
     try:
         testing_news = {"text": [news]}
@@ -82,19 +105,25 @@ def testing_validity(news):
         new_x_test = new_def_test["text"]
         new_xv_test = vectorization.transform(new_x_test)
         
+        # Get predictions from LR model
         LR_prob = LR.predict_proba(new_xv_test)[0] 
-        LR_pred_class = LR.predict(new_xv_test)[0]  
-
+        LR_pred_class = LR.predict(new_xv_test)[0]
         LR_confidence = LR_prob[LR_pred_class] * 100 
+        
+        # Get prediction from RF model
         RF_pred = RF.predict(new_xv_test)[0]
+        
+        print(f"LR prediction: {LR_pred_class}, confidence: {LR_confidence:.2f}%")
+        print(f"RF prediction: {RF_pred}")
 
+        # Determine result based on both models
         if RF_pred == 1 and LR_confidence > 90:
             return "This is definitely not fake news and we are " + str(round(LR_confidence, 2)) + "% sure."
         elif RF_pred == 1 and LR_confidence > 65:
             return "This is most likely not fake news and we are " + str(round(LR_confidence, 2)) + "% sure."
         elif RF_pred == 1 and LR_confidence <= 65:
             return "This is probably not fake news but we are only " + str(round(LR_confidence, 2)) + "% sure."
-        if RF_pred == 0 and LR_confidence > 90:
+        elif RF_pred == 0 and LR_confidence > 90:
             return "This is definitely fake news and we are " + str(round(LR_confidence, 2)) + "% sure."
         elif RF_pred == 0 and LR_confidence > 65:
             return "This is probably fake news and we are " + str(round(LR_confidence, 2)) + "% sure."
@@ -104,7 +133,7 @@ def testing_validity(news):
             return "This is probably not fake news but we are only " + str(round(LR_confidence, 2)) + "% sure."
     except Exception as e:
         print(f"Error in testing_validity: {str(e)}")
-        return "Error analyzing the news. Please try again."
+        return "Error analyzing the news article. Please try again."
 
 @app.route("/")
 def home():
@@ -121,18 +150,35 @@ def run_script():
         
         if not news:
             return render_template("index.html", result="No news provided", summary="")
-            
+        
+        # Get result from model
         result = testing_validity(news)
-        summary = summarize_article(news)
-        summary = summary.replace("- ", "<br><br>-")
+        
+        # Only attempt summary if we have a valid article
+        if "Error" not in result:
+            summary = summarize_article(news)
+            summary = summary.replace("- ", "<br><br>-")
+        else:
+            summary = ""
         
         return render_template("index.html", result=result, summary=summary, news=news)
     except Exception as e:
         print(f"Error in run_script: {str(e)}")
-        return render_template("index.html", result="An error occurred. Please try again.", summary="", news=news if 'news' in locals() else "")
+        return render_template("index.html", 
+                              result="An error occurred processing your request. Please try again.", 
+                              summary="", 
+                              news=news if 'news' in locals() else "")
 
 # For Render deployment
 if __name__ == "__main__":
+    # Preload models once at startup for faster first request
+    try:
+        print("Attempting to preload models...")
+        load_models()
+        print("Preloading complete")
+    except Exception as e:
+        print(f"Preloading models failed: {str(e)}")
+        
     # Render will set PORT environment variable
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
